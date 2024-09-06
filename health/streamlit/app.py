@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from api.predict import make_prediction
+# from api.predict import make_prediction
 
 # Título do app
 st.title('Previsão de Saúde')
@@ -27,7 +27,7 @@ if st.button("Prever"):
     input_df = pd.DataFrame(input_data)
 
     # Chama a função de previsão
-    prediction = make_prediction(input_df)
+    # prediction = make_prediction(input_df)
 
     # Mostra o resultado
-    st.write(f"O resultado previsto é: {prediction}")
+    # st.write(f"O resultado previsto é: {prediction}")

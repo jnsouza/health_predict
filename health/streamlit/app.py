@@ -3,7 +3,7 @@ import pandas as pd
 from api.predict import make_prediction
 
 # Título do app
-st.title('Previsão de SaúdeMODIFICANDO')
+st.title('Previsão de Saúde')
 # Coletar dados do usuário
 st.header("Insira seus dados:")
 htm4 = st.number_input("Altura (HTM4)")

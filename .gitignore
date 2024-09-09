@@ -1,1 +1,5 @@
 .python-version
+*.csv
+*.XPT
+*.zip
+*.swp

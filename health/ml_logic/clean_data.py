@@ -85,8 +85,8 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
 def get_data_with_cache(
         gcp_project:str,
-        query:str,
-        cache_path:Path,
+        query:      str,
+        cache_path: Path,
         data_has_header=True
     ) -> pd.DataFrame:
     """
@@ -98,10 +98,10 @@ def get_data_with_cache(
         df = pd.read_csv(cache_path, header="infer" if data_has_header else None)
     else:
         print(Fore.BLUE + "\nLoad data from BigQuery server..." + Style.RESET_ALL)
-        client = bigquery.Client(project=gcp_project)
+        client    = bigquery.Client(project=gcp_project)
         query_job = client.query(query)
-        result = query_job.result()
-        df = result.to_dataframe()
+        result    = query_job.result()
+        df        = result.to_dataframe()
 
         # Store as CSV if the BQ query returned at least one valid line
         if df.shape[0] > 1:
@@ -112,11 +112,11 @@ def get_data_with_cache(
     return df
 
 def load_data_to_bq(
-        data: pd.DataFrame,
-        gcp_project:str,
-        bq_dataset:str,
-        table: str,
-        truncate: bool
+        data:        pd.DataFrame,
+        gcp_project: str,
+        bq_dataset:  str,
+        table:       str,
+        truncate:    bool
     ) -> None:
     """
     - Save the DataFrame to BigQuery
@@ -127,27 +127,19 @@ def load_data_to_bq(
     full_table_name = f"{gcp_project}.{bq_dataset}.{table}"
     print(Fore.BLUE + f"\nSave data to BigQuery @ {full_table_name}...:" + Style.RESET_ALL)
 
-    # Load data onto full_table_name
-
-    # 🎯 HINT for "*** TypeError: expected bytes, int found":
-    # After preprocessing the data, your original column names are gone (print it to check),
-    # so ensure that your column names are *strings* that start with either
-    # a *letter* or an *underscore*, as BQ does not accept anything else
-
-    # TODO: simplify this solution if possible, but students may very well choose another way to do it
-    # We don"t test directly against their own BQ tables, but only the result of their query
+    ## Load data onto full_table_name
     data.columns = [f"_{column}" if not str(column)[0].isalpha() and not str(column)[0] == "_" else str(column) for column in data.columns]
 
     client = bigquery.Client()
 
-    # Define write mode and schema
+    ## Define write mode and schema
     write_mode = "WRITE_TRUNCATE" if truncate else "WRITE_APPEND"
     job_config = bigquery.LoadJobConfig(write_disposition=write_mode)
 
     print(f"\n{"Write" if truncate else "Append"} {full_table_name} ({data.shape[0]} rows)")
 
-    # Load data
-    job = client.load_table_from_dataframe(data, full_table_name, job_config=job_config)
+    ## Load data
+    job    = client.load_table_from_dataframe(data, full_table_name, job_config=job_config)
     result = job.result()  # wait for the job to complete
 
     print(f"✅ Data saved to bigquery, with shape {data.shape}")

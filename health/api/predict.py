@@ -1,8 +1,9 @@
 import pickle
 import pandas as pd
 from ml_logic.preprocess import preprocess_data
-
+# import joblib
 # Carrega o modelo já treinado
+#MODELO = JOBLIB.LOAD(caminhodomodelo)
 model_path = 'data/models/meu_modelo.pkl'
 with open(model_path, 'rb') as f:
     model = pickle.load(f)

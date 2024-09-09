@@ -83,11 +83,11 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-def get_data_with_cache(
+def get_data(
         gcp_project:str,
         query:      str,
         cache_path: Path,
-        data_has_header=True
+        data_has_header=False
     ) -> pd.DataFrame:
     """
     Retrieve `query` data from BigQuery, or from `cache_path` if the file exists
@@ -136,7 +136,7 @@ def load_data_to_bq(
     write_mode = "WRITE_TRUNCATE" if truncate else "WRITE_APPEND"
     job_config = bigquery.LoadJobConfig(write_disposition=write_mode)
 
-    print(f"\n{"Write" if truncate else "Append"} {full_table_name} ({data.shape[0]} rows)")
+    # print(f"\n{"Write" if truncate else "Append"} {full_table_name} ({data.shape[0]} rows)")
 
     ## Load data
     job    = client.load_table_from_dataframe(data, full_table_name, job_config=job_config)

@@ -2,8 +2,12 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+import requests
 
-# titulo da pagina
+# URL da API do backend
+api_url = "colocaraqui"
+
+# Configuração da página e título
 st.set_page_config(
     page_title="Well-Being Calculator",
     page_icon="🏃‍♀️❤️"
@@ -15,120 +19,160 @@ st.markdown("""
     </h1>
 """, unsafe_allow_html=True)
 
-# Função dummy para previsão
-def predict_wellbeing(inputs):
-    prediction = np.random.rand()  # Previsão dummy
-    return prediction
-st.write("Welcome to the Well-being Calculator. Fill in the details on the sidebar to get your well-being score.")
-
-import streamlit as st
-
+# Informação sobre a aplicação
 st.info("This application is designed to assess your well-being using machine learning algorithms. If you have concerns about your health, please consult a healthcare professional.")
-# st.markdown("""
-# <div style='font-size:20px; color:#333; font-weight: bold;'>
-# This application is designed to assess your well-being using machine learning algorithms. If you have concerns about your health, please consult a healthcare professional.
-# </div>
-# """, unsafe_allow_html=True)
 
-# Sidebar para input dos dados e botão de cálculo
+# Sidebar para input dos dados
 with st.sidebar:
     st.header("Patient data")
 
-    # Idade
+    # Idade e mapeamento
     age = st.slider("Age", 0, 100, 30)
+    def map_age_to_category(age):
+        if 18 <= age <= 24: return 1
+        elif 25 <= age <= 29: return 2
+        elif 30 <= age <= 34: return 3
+        elif 35 <= age <= 39: return 4
+        elif 40 <= age <= 44: return 5
+        elif 45 <= age <= 49: return 6
+        elif 50 <= age <= 54: return 7
+        elif 55 <= age <= 59: return 8
+        elif 60 <= age <= 64: return 9
+        elif 65 <= age <= 69: return 10
+        elif 70 <= age <= 74: return 11
+        elif 75 <= age <= 79: return 12
+        elif age >= 80: return 13
+        else: return 14
+    age_category_value = map_age_to_category(age)
 
     # Peso e altura
     weight = st.number_input("Weight (kg)", 30, 200, 70)
     height = st.number_input("Height (cm)", 100, 250, 170)
 
-    # Seleção de sexo (SEXVAR)
+    # Seleção de sexo
     sex = st.selectbox("Sex", ["Male", "Female"])
     sex_var = 1 if sex == "Male" else 2
 
-    # Nível de atividade física (_PACAT3)
-    _pacat3 = st.selectbox("Physical Activity Level",
-                           ["Highly Active", "Active", "Insufficiently Active", "Inactive", "Don't Know"])
-    pacat3_map = {
-        "Highly Active": 1,
-        "Active": 2,
-        "Insufficiently Active": 3,
-        "Inactive": 4,
-        "Don't Know": 9
-    }
+    # Categoria de BMI
+    bmi_category = st.selectbox("BMI Category", ["Underweight", "Normal Weight", "Overweight", "Obese"])
+    bmi_map = {"Underweight": 1750, "Normal Weight": 2250, "Overweight": 2750, "Obese": 3500}
+    bmi_value = bmi_map[bmi_category]
+
+    # Nível de atividade física
+    _pacat3 = st.selectbox("Physical Activity Level", ["Highly Active", "Active", "Insufficiently Active", "Inactive", "Don't Know"])
+    pacat3_map = {"Highly Active": 1, "Active": 2, "Insufficiently Active": 3, "Inactive": 4, "Don't Know": 9}
     _pacat3_value = pacat3_map[_pacat3]
 
     # Tipo de atividade física
-    exract22 = st.selectbox(
-        "What other type of physical activity gave you the next most exercise during the past month?",
-        ["Walking", "Running or jogging", "Gardening or yard work", "Bicycling", "Aerobics",
-         "Calisthenics", "Elliptical machine", "Household activities", "Weight lifting",
-         "Yoga/Pilates", "Other"]
-    )
-    exract22_activity_map = {
-        "Walking": 1, "Running or jogging": 2, "Gardening or yard work": 3,
-        "Bicycling": 4, "Aerobics": 5, "Calisthenics": 6,
-        "Elliptical machine": 7, "Household activities": 8,
-        "Weight lifting": 9, "Yoga/Pilates": 10, "Other": 11
-    }
-    exract22 = exract22_activity_map[exract22]
+    exract22 = st.selectbox("Type of physical activity", ["Walking", "Running or jogging", "Gardening or yard work", "Bicycling", "Aerobics", "Calisthenics", "Elliptical machine", "Household activities", "Weight lifting", "Yoga/Pilates", "Other"])
+    exract22_activity_map = {"Walking": 1, "Running or jogging": 2, "Gardening or yard work": 3, "Bicycling": 4, "Aerobics": 5, "Calisthenics": 6, "Elliptical machine": 7, "Household activities": 8, "Weight lifting": 9, "Yoga/Pilates": 10, "Other": 11}
+    exract22_value = exract22_activity_map[exract22]
+
+    # Frequência de atividade de força por semana
+    strfreq = st.slider("Strength activity frequency (days/week)", 0, 7, 0)
+    strfreq_value = strfreq * 100 if strfreq > 0 else 0
+
+    # Minutos totais de atividade física por semana
+    pa3min = st.slider("Total minutes of physical activity per week", 0, 1000, 180)
 
     # Saúde física e mental
-    physhlth = st.slider("Days not feeling well physically in the past 30 days)", 0, 30, 0)
-    menthlth = st.slider("Days not feeling well mentally in the past 30 days)", 0, 30, 0)
+    physhlth = st.slider("Days not feeling well physically (past 30 days)", 0, 30, 0)
+    menthlth = st.slider("Days not feeling well mentally (past 30 days)", 0, 30, 0)
 
-    # Depressive disorder (1 = Yes, 2 = No)
+    # Doenças e condições
     depressive_disorder = st.selectbox("Ever told you had a depressive disorder?", ["Yes", "No"])
     depressive_disorder = 1 if depressive_disorder == "Yes" else 2
 
-    # Pressão alta (1 = Yes, 2 = No)
-    rf_hype6 = st.selectbox("Do you have high blood pressure?", ["No", "Yes"])
-    rf_hype6 = 2 if rf_hype6 == "No" else 1
+    cvdstrk3 = st.selectbox("Have you ever been diagnosed with a stroke?", ["No", "Yes"])
+    cvdstrk3 = 2 if cvdstrk3 == "No" else 1
 
-    # Colesterol alto (1 = Yes, 2 = No)
+    rfhype6 = st.selectbox("Do you have high blood pressure?", ["No", "Yes"])
+    rfhype6 = 2 if rfhype6 == "No" else 1
+
     rf_chol3 = st.selectbox("Do you have high cholesterol?", ["No", "Yes"])
     rf_chol3 = 2 if rf_chol3 == "No" else 1
 
-    # Doença cardíaca (1 = Yes, 2 = No)
     d_michd = st.selectbox("Have you been diagnosed with coronary heart disease?", ["Yes", "No"])
     d_michd = 1 if d_michd == "Yes" else 2
 
-    # Botão para calcular o bem-estar
+    drdxar2 = st.selectbox("Have you been diagnosed with arthritis?", ["Yes", "No"])
+    drdxar2 = 1 if drdxar2 == "Yes" else 2
+
+    diabete4 = st.selectbox("Have you been told you had diabetes?", ["Yes", "No", "Pre-diabetes/borderline", "Don't know/Not sure"])
+    diabete4_map = {"Yes": 1, "No": 3, "Pre-diabetes/borderline": 4, "Don't know/Not sure": 7}
+    diabete4_value = diabete4_map[diabete4]
+
+    # Variáveis hardcoded
+    educag_value = 4.0
+    incomg1_value = 5.0
+    ltahth1 = 1.0
+    checkup1 = 1.0
+    exanery2 = 1.0
+    cvdinft4 = 1.0
+    cvdcrhd4 = 2.0
+    cvdstrk3 = 2.0
+    chcocnc1 = 2.0
+    chccopd3 = 2.0
+    chckdny2 = 2.0
+    decide = 2.0
+    phys14d = 0
+    ment14d = 0
+    actin13 = 1
+    paindx3 = 1
+    maxvo21 = 2395
+    exerhmm1 = 129.52
+
     if st.button("Calculate Well-Being"):
-        # Inputs para o modelo (convertendo as seleções em valores numéricos)
-        inputs = [age, weight, height, _pacat3, physhlth, menthlth,
-                  rf_hype6, rf_chol3, d_michd, exract22, depressive_disorder]
+            # Dicionário de inputs para o backend
+        inputs = {
+        "age_category": age_category_value,
+        "weight": weight,
+        "height": height,
+        "sex": sex_var,
+        "bmi_value": bmi_value,
+        "physical_activity_level": _pacat3_value,
+        "physhlth": physhlth,
+        "menthlth": menthlth,
+        "depressive_disorder": depressive_disorder,
+        "rfhype6": rfhype6,
+        "rf_chol3": rf_chol3,
+        "d_michd": d_michd,
+        "exract22": exract22_value,
+        "strfreq": strfreq_value,
+        "pa3min": pa3min,
+        "ltahth1": ltahth1,
+        "checkup1": checkup1,
+        "exanery2": exanery2,
+        "cvdinft4": cvdinft4,
+        "cvdcrhd4": cvdcrhd4,
+        "decide": decide,
+        "phys14d": phys14d,
+        "ment14d": ment14d,
+        "actin13": actin13,
+        "paindx3": paindx3,
+        "maxvo21": maxvo21,
+        "exerhmm1": exerhmm1
+    }
+        print(inputs)
+        print("AQUI ESTÁ O QUE VAI PRO BACK!!!!!!!")
 
-        # Fazer a previsão do bem-estar
-        # MANDA PRO BACK E PREVÊ - FAZENDO UM POST
-        #MOCKSCORE
-        score = 52
+    try:
+        # Fazendo o POST para o backend
+        response = requests.post(api_url, json=inputs)
 
-        # try:
-        #     score = predict_wellbeing(inputs)
-        # except:
-        #     score = None
+        # Verificar se o request foi bem-sucedido
+        if response.status_code == 200:
+            result = response.json()
+            st.sidebar.success(f"Well-Being Score: {result['wellbeing_score']}")
+        else:
+            st.sidebar.error("Error: Unable to fetch well-being score")
+    except Exception as e:
+        st.sidebar.error(f"An error occurred: {e}")
 
 
-        # Exibir o resultado
-        # st.sidebar.success(f"Well-Being Score: {score:.2f}")
-        st.sidebar.success(f"Well-Being Score: {score:52}")
-        # Criar um DataFrame para exibir os dados do paciente
-        patient_data = pd.DataFrame({
-            'Input': ['Age', 'Weight', 'Height', 'Sex', 'Physical Activity Level',
-                      'Physical Health', 'Mental Health', 'Depressive Disorder',
-                      'High Blood Pressure', 'High Cholesterol', 'Heart Disease'],
-            'Value': [age, weight, height, sex_var, _pacat3_value, physhlth, menthlth,
-                      depressive_disorder, rf_hype6, rf_chol3, d_michd]
-        })
 
-        # Exibir a tabela com os dados do paciente
-        st.write("Patient Data Summary")
-        st.table(patient_data)
-
-# dicionario_retorno =  {1: 'Bem',
-#         2: 'Mediana',
-#         3: 'Ruim'}
-
+    # score = predict_wellbeing(inputs)
+    score = 1
 # Exibir o resultado na página principal
 st.subheader("Well-Being Score and Analysis")
 st.write("Your Well-Being Score will be displayed here after you calculate.")

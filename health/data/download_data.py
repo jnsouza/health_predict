@@ -6,6 +6,10 @@ import pandas as pd
 import warnings
 warnings.filterwarnings("ignore")
 
+
+## script dir
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
 ## file names
 file_zip = 'LLCP2023XPT.zip'
 file_XPT = 'LLCP2023.XPT '
@@ -13,9 +17,10 @@ file_csv = 'LLCP2023.csv'
 
 
 ## file paths
-current_path = os.path.join(os.getcwd(), "raw")
-zip_path     = os.path.join(current_path, file_zip)
-XPT_path     = os.path.join(current_path, file_XPT)
+current_path = os.path.join(script_dir, "raw")
+abs_cur_path = os.path.abspath(current_path)
+zip_path     = os.path.join(abs_cur_path, file_zip)
+XPT_path     = os.path.join(abs_cur_path, file_XPT)
 
 
 ## loading file

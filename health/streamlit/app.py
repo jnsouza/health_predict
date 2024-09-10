@@ -6,7 +6,7 @@ import requests
 
 # URL da API do backend
 # taxiFareApiUrl = 'https://taxifare.lewagon.ai/predict'
-api_url = "http://localhost:8000/predict"
+api_url = "http://localhost:8501/predict"
 # Configuração da página e título
 st.set_page_config(
     page_title="Well-Being Calculator",
@@ -69,6 +69,7 @@ with st.sidebar:
     exract22_activity_map = {"Walking": 1, "Running or jogging": 2, "Gardening or yard work": 3, "Bicycling": 4, "Aerobics": 5, "Calisthenics": 6, "Elliptical machine": 7, "Household activities": 8, "Weight lifting": 9, "Yoga/Pilates": 10, "Other": 11}
     exract22_value = exract22_activity_map[exract22]
 
+
     # Frequência de atividade de força por semana
     strfreq = st.slider("Strength activity frequency (days/week)", 0, 7, 0)
     strfreq_value = strfreq * 100 if strfreq > 0 else 0
@@ -122,10 +123,12 @@ with st.sidebar:
     paindx3 = 1
     maxvo21 = 2395
     exerhmm1 = 129.52
+    exract12 = exract22_value
+    diffalon = 2
 
     if st.button("🧮 Calculate Well-Being"):
             # Dicionário de inputs para o backend
-        inputs = {
+        input_data = {
         "age_category": age_category_value,
         "weight": weight,
         "height": height,
@@ -152,15 +155,18 @@ with st.sidebar:
         "actin13": actin13,
         "paindx3": paindx3,
         "maxvo21": maxvo21,
-        "exerhmm1": exerhmm1
+        "exerhmm1": exerhmm1,
+        "exract12": exract12,
+        "diffalon": diffalon
     }
-        print(inputs)
+        print(input_data)
         print("AQUI ESTÁ O QUE VAI PRO BACK!!!!!!!")
 
-        # Fazendo o get para o backend/Sending request to the API
-        # response = requests.get(api_url, params=inputs)
+        # Fazendo o post para o backend/Sending request to the API
+        response = requests.post(api_url, params=input_data)
+        print(response.text, "retornou do backend")
 
-        # # Verificar se o request foi bem-sucedido
+        # # # Verificar se o request foi bem-sucedido
         # if response.status_code == 200:
         #     prediction = response.json().get('prediction')
 
@@ -171,8 +177,9 @@ with st.sidebar:
 
 
 
-    # score = predict_wellbeing(inputs)
-    score = 1
+    # score = response
+    # print(score)
+    # print("ISSO ESTÁ RETORNANDO DO BACK!!!!!!!!!!!!!!!!")
     st.markdown("<br><br>", unsafe_allow_html=True)
 # Exibir o resultado na página principal
 st.subheader("Well-Being Score and Analysis")

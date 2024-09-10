@@ -4,9 +4,11 @@ import pandas as pd
 import plotly.graph_objects as go
 import requests
 
+input_data = {}
+
 # URL da API do backend
 # taxiFareApiUrl = 'https://taxifare.lewagon.ai/predict'
-api_url = "http://localhost:8501/predict"
+api_url = "http://localhost:8000/predict"
 # Configuração da página e título
 st.set_page_config(
     page_title="Well-Being Calculator",
@@ -56,7 +58,7 @@ with st.sidebar:
     # Categoria de BMI
     bmi_category = st.select_slider("BMI Category",
                                 options=["Underweight", "Normal Weight", "Overweight", "Obese"])
-    bmi_map = {"Underweight": 1750, "Normal Weight": 2250, "Overweight": 2750, "Obese": 3500}
+    bmi_map = {"Underweight": 1, "Normal Weight": 2, "Overweight": 3, "Obese": 4}
     bmi_value = bmi_map[bmi_category]
 
     # Nível de atividade física
@@ -104,6 +106,28 @@ with st.sidebar:
     diabete4_map = {"Yes": 1, "No": 3, "Pre-diabetes/borderline": 4, "Don't know/Not sure": 7}
     diabete4_value = diabete4_map[diabete4]
 
+    educag_value = st.selectbox( "Level of Education Completed",
+    options=[1, 2, 3, 4],  # Mapeando os valores corretos
+    format_func=lambda x: {
+        1: "Did not graduate High School",
+        2: "Graduated High School",
+        3: "Attended College or Technical School",
+        4: "Graduated from College or Technical School",
+    }[x])
+
+    incomg1_value = st.selectbox( "Income Categories",
+    options=[1, 2, 3, 4, 5, 6, 7, 9],  # Mapeando os valores corretos
+    format_func=lambda x: {
+        1: "Less than $15,000",
+        2: "$15,000 to < $25,000",
+        3: "$25,000 to < $35,000",
+        4: "$35,000 to < $50,000",
+        5: "$50,000 to < $100,000",
+        6: "$100,000 to < $200,000",
+        7: "$200,000 or more",
+        9: "Don't know/Not sure/Missing"
+    }[x])
+
     # Variáveis hardcoded
     educag_value = 4.0
     incomg1_value = 5.0
@@ -117,8 +141,8 @@ with st.sidebar:
     chccopd3 = 2.0
     chckdny2 = 2.0
     decide = 2.0
-    phys14d = 0
-    ment14d = 0
+    phys14d = 1
+    ment14d = 1
     actin13 = 1
     paindx3 = 1
     maxvo21 = 2395
@@ -127,59 +151,60 @@ with st.sidebar:
     diffalon = 2
 
     if st.button("🧮 Calculate Well-Being"):
-            # Dicionário de inputs para o backend
         input_data = {
-        "age_category": age_category_value,
-        "weight": weight,
-        "height": height,
-        "sex": sex_var,
-        "bmi_value": bmi_value,
-        "physical_activity_level": _pacat3_value,
-        "physhlth": physhlth,
-        "menthlth": menthlth,
-        "depressive_disorder": depressive_disorder,
-        "rfhype6": rfhype6,
-        "rf_chol3": rf_chol3,
-        "d_michd": d_michd,
-        "exract22": exract22_value,
-        "strfreq": strfreq_value,
-        "pa3min": pa3min,
-        "ltahth1": ltahth1,
-        "checkup1": checkup1,
-        "exanery2": exanery2,
-        "cvdinft4": cvdinft4,
-        "cvdcrhd4": cvdcrhd4,
-        "decide": decide,
-        "phys14d": phys14d,
-        "ment14d": ment14d,
-        "actin13": actin13,
-        "paindx3": paindx3,
-        "maxvo21": maxvo21,
-        "exerhmm1": exerhmm1,
-        "exract12": exract12,
-        "diffalon": diffalon
+        "_AGEG5YR": age_category_value,  # Mapeando a idade para a categoria correta
+        "WTKG3": weight,  # Peso
+        "HTM4": height,  # Altura
+        "SEXVAR": sex_var,  # Sexo
+        "_BMI5CAT": bmi_value,  # Valor de BMI (Índice de Massa Corporal)
+        "_PACAT3": _pacat3_value,  # Nível de atividade física
+        "PHYSHLTH": physhlth,  # Saúde física (dias sem se sentir bem)
+        "MENTHLTH": menthlth,  # Saúde mental (dias sem se sentir bem)
+        "ADDEPEV3": depressive_disorder,  # Depressão
+        "_RFHYPE6": rfhype6,  # Pressão alta
+        "_RFCHOL3": rf_chol3,  # Colesterol alto
+        "_MICHD": d_michd,  # Doença cardíaca
+        "EXRACT22": exract22_value,  # Tipo de atividade física
+        "STRFREQ_": strfreq_value,  # Frequência de atividade de força
+        "PA3MIN_": pa3min,  # Minutos totais de atividade física por semana
+        "_LTASTH1": ltahth1,  # Asma
+        "CHECKUP1": checkup1,  # Exames médicos
+        "EXERANY2": exanery2,  # Alguma atividade física
+        "CVDINFR4": cvdinft4,  # Infarto
+        "CVDCRHD4": cvdcrhd4,  # Doença cardíaca crônica
+        "DECIDE": decide,  # Dificuldade em tomar decisões
+        "_PHYS14D": phys14d,  # Dias de má saúde física
+        "_MENT14D": ment14d,  # Dias de má saúde mental
+        "ACTIN13_": actin13,  # Atividade moderada
+        "_PAINDX3": paindx3,  # Índice de atividade física
+        "MAXVO21_": maxvo21,  # Máximo VO2
+        "EXERHMM1": exerhmm1,  # Minutos de exercício
+        "EXRACT12": exract12,  # Segunda atividade física
+        "DIFFALON": diffalon,  # Dificuldade para fazer atividades sozinho
+        "_EDUCAG": educag_value,  # Nível de educação
+        "_INCOMG1": incomg1_value, # Nível de renda
+        "_DRDXAR2": drdxar2,
+        'CVDSTRK3': cvdstrk3,  # AVC
+        'CHCOCNC1': chcocnc1,  # Câncer
+        'CHCCOPD3': chccopd3,  # Doença pulmonar
+        'CHCKDNY2': chckdny2,  # Doença renal
+        'DIABETE4': diabete4_value  # Diabetes
     }
-        print(input_data)
-        print("AQUI ESTÁ O QUE VAI PRO BACK!!!!!!!")
 
-        # Fazendo o post para o backend/Sending request to the API
-        response = requests.post(api_url, params=input_data)
-        print(response.text, "retornou do backend")
+        try:
+            response = requests.post(api_url, json=input_data)  # Aqui você usa json=input_data
 
-        # # # Verificar se o request foi bem-sucedido
-        # if response.status_code == 200:
-        #     prediction = response.json().get('prediction')
+            if response.status_code == 200:
+                prediction = response.json()
 
-        #     st.balloons()  # Trigger balloon animation
-        #     st.markdown(f'<h2 style="color:green; animation: fadeIn 2s ease-in;">💸 ${prediction:.2f}</h2>', unsafe_allow_html=True)
-        # else:
-        #     st.error(f"Error: {response.status_code}")
+                st.success(f"Prediction: {prediction['result']}")
+                well_being_score = prediction['result']
+                st.write(f"Prediction Probability: {prediction['probability']}")
+            else:
+                st.error(f"Error: {response.status_code} - {response.text}")
+        except Exception as e:
+            st.error(f"Failed to connect to the API. Error: {str(e)}")
 
-
-
-    # score = response
-    # print(score)
-    # print("ISSO ESTÁ RETORNANDO DO BACK!!!!!!!!!!!!!!!!")
     st.markdown("<br><br>", unsafe_allow_html=True)
 # Exibir o resultado na página principal
 st.subheader("Well-Being Score and Analysis")
@@ -194,16 +219,36 @@ Prediction done
 
 **BMI level:** Normal Weight
 """)
-
+well_being_score = 0
 fig = go.Figure(go.Indicator(
     mode="gauge+number",
-    value=2,
+    value=well_being_score,  # Esse é o valor que será atualizado dinamicamente
     title={'text': "Well-Being Score"},
-    gauge={'axis': {'range': [1, 3]},
-           'bar': {'color': "green"},
-           'steps': [
-               {'range': [0, 1], 'color': "lightgreen"},
-               {'range': [1, 2.0], 'color': "orange"},
-               {'range': [2.0, 3], 'color': "red"}]}
+    gauge={
+        'axis': {'range': [0, 3], 'visible': True},  # Alterando o range para 0-3
+        'bar': {'color': "green"},  # Cor da barra que mostra o valor atual
+        'bgcolor': "white",  # Remova o fundo colorido
+        'borderwidth': 0,  # Sem borda
+        'steps': [
+            {'range': [0, 1], 'color': "lightgreen"},  # Excelente/Muito Bom
+            {'range': [1, 2], 'color': "orange"},  # Bom
+            {'range': [2, 3], 'color': "red"}  # Razoável/Péssimo
+        ],
+        'threshold': {
+            'line': {'color': "black", 'width': 4},  # Linha preta indicando o valor
+            'thickness': 0.75,
+            'value': well_being_score
+        }
+    }
 ))
+
+# Exibir o gráfico no Streamlit
 st.plotly_chart(fig)
+
+# Adicionar a legenda abaixo do gráfico
+st.markdown("""
+### Well-Being Score Ranges:
+- **0 - 1**: Excellent/Very Good
+- **1 - 2**: Good
+- **2 - 3**: Fair/Poor
+""")

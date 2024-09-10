@@ -234,18 +234,6 @@ else:
         }
     }
 ))
-    categories = ['Physical Health', 'Mental Health', 'Activity Level']
-    values = [physhlth, menthlth, _pacat3_value]  # Inputs do usuário
-    fig2 = go.Figure(go.Scatterpolar(
-        r=values,
-        theta=categories,
-        fill='toself'
-    ))
-    fig2.update_layout(title='Health Indicators')
-
-    st.plotly_chart(fig2)
-
-    # Exibir o gráfico no Streamlit
     st.plotly_chart(fig)
     st.markdown("""
         ### Well-Being Score Ranges:

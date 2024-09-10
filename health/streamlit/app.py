@@ -5,8 +5,8 @@ import plotly.graph_objects as go
 import requests
 
 # URL da API do backend
-api_url = "colocaraqui"
-
+# taxiFareApiUrl = 'https://taxifare.lewagon.ai/predict'
+api_url = "http://localhost:8000/predict"
 # Configuração da página e título
 st.set_page_config(
     page_title="Well-Being Calculator",
@@ -54,7 +54,8 @@ with st.sidebar:
     sex_var = 1 if sex == "Male" else 2
 
     # Categoria de BMI
-    bmi_category = st.selectbox("BMI Category", ["Underweight", "Normal Weight", "Overweight", "Obese"])
+    bmi_category = st.select_slider("BMI Category",
+                                options=["Underweight", "Normal Weight", "Overweight", "Obese"])
     bmi_map = {"Underweight": 1750, "Normal Weight": 2250, "Overweight": 2750, "Obese": 3500}
     bmi_value = bmi_map[bmi_category]
 
@@ -122,7 +123,7 @@ with st.sidebar:
     maxvo21 = 2395
     exerhmm1 = 129.52
 
-    if st.button("Calculate Well-Being"):
+    if st.button("🧮 Calculate Well-Being"):
             # Dicionário de inputs para o backend
         inputs = {
         "age_category": age_category_value,
@@ -156,27 +157,26 @@ with st.sidebar:
         print(inputs)
         print("AQUI ESTÁ O QUE VAI PRO BACK!!!!!!!")
 
-    try:
-        # Fazendo o POST para o backend
-        response = requests.post(api_url, json=inputs)
+        # Fazendo o get para o backend/Sending request to the API
+        # response = requests.get(api_url, params=inputs)
 
-        # Verificar se o request foi bem-sucedido
-        if response.status_code == 200:
-            result = response.json()
-            st.sidebar.success(f"Well-Being Score: {result['wellbeing_score']}")
-        else:
-            st.sidebar.error("Error: Unable to fetch well-being score")
-    except Exception as e:
-        st.sidebar.error(f"An error occurred: {e}")
+        # # Verificar se o request foi bem-sucedido
+        # if response.status_code == 200:
+        #     prediction = response.json().get('prediction')
+
+        #     st.balloons()  # Trigger balloon animation
+        #     st.markdown(f'<h2 style="color:green; animation: fadeIn 2s ease-in;">💸 ${prediction:.2f}</h2>', unsafe_allow_html=True)
+        # else:
+        #     st.error(f"Error: {response.status_code}")
 
 
 
     # score = predict_wellbeing(inputs)
     score = 1
+    st.markdown("<br><br>", unsafe_allow_html=True)
 # Exibir o resultado na página principal
 st.subheader("Well-Being Score and Analysis")
 st.write("Your Well-Being Score will be displayed here after you calculate.")
-
 
 # Adicionando mais detalhes
 st.write(f"""
@@ -192,6 +192,11 @@ fig = go.Figure(go.Indicator(
     mode="gauge+number",
     value=2,
     title={'text': "Well-Being Score"},
-    gauge={'axis': {'range': [1, 3]}}
+    gauge={'axis': {'range': [1, 3]},
+           'bar': {'color': "green"},
+           'steps': [
+               {'range': [0, 1], 'color': "lightgreen"},
+               {'range': [1, 2.0], 'color': "orange"},
+               {'range': [2.0, 3], 'color': "red"}]}
 ))
 st.plotly_chart(fig)

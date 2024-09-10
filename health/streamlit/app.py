@@ -23,7 +23,7 @@ st.markdown("""
 
 # Informação sobre a aplicação
 st.info("This application is designed to assess your well-being using machine learning algorithms. If you have concerns about your health, please consult a healthcare professional.")
-
+well_being_score = None
 # Sidebar para input dos dados
 with st.sidebar:
     st.header("Patient data")
@@ -199,28 +199,21 @@ with st.sidebar:
 
                 st.success(f"Prediction: {prediction['result']}")
                 well_being_score = prediction['result']
-                st.write(f"Prediction Probability: {prediction['probability']}")
+                # st.write(f"Prediction Probability: {prediction['probability']}")
             else:
                 st.error(f"Error: {response.status_code} - {response.text}")
         except Exception as e:
             st.error(f"Failed to connect to the API. Error: {str(e)}")
 
     st.markdown("<br><br>", unsafe_allow_html=True)
-# Exibir o resultado na página principal
-st.subheader("Well-Being Score and Analysis")
-st.write("Your Well-Being Score will be displayed here after you calculate.")
 
-# Adicionando mais detalhes
-st.write(f"""
-Prediction done
-**Well-Being Score:** 20%
-
-**Confidence in the well-being assessment:** 90.2 %
-
-**BMI level:** Normal Weight
-""")
-well_being_score = 0
-fig = go.Figure(go.Indicator(
+# Se a predição ainda não foi feita, mostre uma mensagem genérica
+if well_being_score is None:
+    st.subheader("Score and Analysis")
+    st.write("Your Well-Being Score will be displayed here after you calculate.")
+else:
+    # Exibir o gráfico com o score após a predição
+    fig = go.Figure(go.Indicator(
     mode="gauge+number",
     value=well_being_score,  # Esse é o valor que será atualizado dinamicamente
     title={'text': "Well-Being Score"},
@@ -241,14 +234,22 @@ fig = go.Figure(go.Indicator(
         }
     }
 ))
+    categories = ['Physical Health', 'Mental Health', 'Activity Level']
+    values = [physhlth, menthlth, _pacat3_value]  # Inputs do usuário
+    fig2 = go.Figure(go.Scatterpolar(
+        r=values,
+        theta=categories,
+        fill='toself'
+    ))
+    fig2.update_layout(title='Health Indicators')
 
-# Exibir o gráfico no Streamlit
-st.plotly_chart(fig)
+    st.plotly_chart(fig2)
 
-# Adicionar a legenda abaixo do gráfico
-st.markdown("""
-### Well-Being Score Ranges:
-- **0 - 1**: Excellent/Very Good
-- **1 - 2**: Good
-- **2 - 3**: Fair/Poor
-""")
+    # Exibir o gráfico no Streamlit
+    st.plotly_chart(fig)
+    st.markdown("""
+        ### Well-Being Score Ranges:
+        - **0 - 1**: Excellent/Very Good
+        - **1 - 2**: Good
+        - **2 - 3**: Fair/Poor
+        """)

@@ -1,14 +1,12 @@
 import os
 import pickle
 import pandas as pd
-# from ml_logic.preprocess import preprocess_data
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# from joblib import load
 import numpy as np
 import xgboost
 from pydantic import BaseModel
-# from models import PredictionRequest, PredictionResponse
+
 
 ## script dir
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -46,6 +44,9 @@ def make_prediction(df):
 
     prediction = {'result': int(predict[0]), 'probability': proba.tolist()}
 
+    print("prediction finished!")
+    print()
+
     return prediction
 
 
@@ -60,5 +61,5 @@ variables = [
 ]
 
 X_pred = pd.DataFrame([{var: np.random.randint(1, 3) for var in variables}])
-
-make_prediction(X_pred)
+pred   = make_prediction(X_pred)
+print(pred)

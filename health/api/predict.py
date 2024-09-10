@@ -7,6 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 # from joblib import load
 import numpy as np
 import xgboost
+from pydantic import BaseModel
+# from models import PredictionRequest, PredictionResponse
 
 ## script dir
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -17,8 +19,9 @@ model_path     = os.path.join(script_dir, "../data/model")
 abs_model_path = os.path.abspath(model_path)
 model_file     = os.path.join(model_path, model_name)
 model          = pickle.load(open(model_file, 'rb'))
-
 print("model loaded")
+print()
+
 ## API
 app = FastAPI()
 
@@ -31,14 +34,11 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-# model = pickle.load(f)
 
-#PRECISA ATUALIZAR COM O QUE VEM DO FRONT
 @app.post("/predict")
-def make_prediction(df: pd.DataFrame):
-
-    #PRECISA FAZER O X_PRED COM O QUE VEM DO FRONT.
-
+def make_prediction(df):
+    print("starting prediction")
+    print()
 
     ## prediction
     predict = model.predict(X_pred)
@@ -49,47 +49,16 @@ def make_prediction(df: pd.DataFrame):
     return prediction
 
 
-X_pred = pd.DataFrame([{
-        'var_1': np.random.randint(1, 3),
-        'var_2': np.random.randint(1, 3),
-        'var_3': np.random.randint(1, 3),
-        'var_4': np.random.randint(1, 3),
-        'var_5': np.random.randint(1, 3),
-        'var_6': np.random.randint(1, 3),
-        'var_7': np.random.randint(1, 3),
-        'var_8': np.random.randint(1, 3),
-        'var_9': np.random.randint(1, 3),
-        'var_10': np.random.randint(1, 3),
-        'var_11': np.random.randint(1, 3),
-        'var_12': np.random.randint(1, 3),
-        'var_13': np.random.randint(1, 3),
-        'var_14': np.random.randint(1, 3),
-        'var_15': np.random.randint(1, 3),
-        'var_16': np.random.randint(1, 3),
-        'var_17': np.random.randint(1, 3),
-        'var_18': np.random.randint(1, 3),
-        'var_19': np.random.randint(1, 3),
-        'var_20': np.random.randint(1, 3),
-        'var_21': np.random.randint(1, 3),
-        'var_22': np.random.randint(1, 3),
-        'var_23': np.random.randint(1, 3),
-        'var_24': np.random.randint(1, 3),
-        'var_25': np.random.randint(1, 3),
-        'var_26': np.random.randint(1, 3),
-        'var_27': np.random.randint(1, 3),
-        'var_28': np.random.randint(1, 3),
-        'var_29': np.random.randint(1, 3),
-        'var_30': np.random.randint(1, 3),
-        'var_31': np.random.randint(1, 3),
-        'var_32': np.random.randint(1, 3),
-        'var_33': np.random.randint(1, 3),
-        'var_34': np.random.randint(1, 3),
-        'var_35': np.random.randint(1, 3),
-        'var_36': np.random.randint(1, 3),
-        'var_37': np.random.randint(1, 3),
-        'var_38': np.random.randint(1, 3),
-        'var_39': np.random.randint(1, 3),
-        'var_40': np.random.randint(1, 3)
-    }])
+variables = [
+    '_PACAT3', '_RFHYPE6', '_RFCHOL3', '_MICHD', '_LTASTH1', '_AGEG5YR',
+    '_DRDXAR2', 'HTM4', 'WTKG3', '_BMI5CAT', '_EDUCAG', '_INCOMG1',
+    '_PAINDX3', 'SEXVAR', 'PHYSHLTH', 'MENTHLTH', 'CHECKUP1',
+    'EXERANY2', 'EXRACT12', 'EXERHMM1', 'EXRACT22', 'CVDINFR4', 'CVDCRHD4',
+    'CVDSTRK3', 'CHCOCNC1', 'CHCCOPD3', 'ADDEPEV3', 'CHCKDNY2', 'DIABETE4',
+    'DECIDE', 'DIFFALON', '_PHYS14D', '_MENT14D', 'MAXVO21_', 'ACTIN13_',
+    'STRFREQ_', 'PA3MIN_'
+]
+
+X_pred = pd.DataFrame([{var: np.random.randint(1, 3) for var in variables}])
 
 make_prediction(X_pred)

@@ -6,7 +6,7 @@ import requests
 
 # URL da API do backend
 # taxiFareApiUrl = 'https://taxifare.lewagon.ai/predict'
-api_url = "http://localhost:8501/"
+api_url = "http://localhost:8501/predict"
 # Configuração da página e título
 st.set_page_config(
     page_title="Well-Being Calculator",
@@ -162,17 +162,18 @@ with st.sidebar:
         print(input_data)
         print("AQUI ESTÁ O QUE VAI PRO BACK!!!!!!!")
 
-        # Fazendo o get para o backend/Sending request to the API
-        response = requests.get(api_url, params=input_data)
+        # Fazendo o post para o backend/Sending request to the API
+        response = requests.post(api_url, params=input_data)
+        print(response.text, "retornou do backend")
 
-        # # Verificar se o request foi bem-sucedido
-        if response.status_code == 200:
-            prediction = response.json().get('prediction')
+        # # # Verificar se o request foi bem-sucedido
+        # if response.status_code == 200:
+        #     prediction = response.json().get('prediction')
 
-            st.balloons()  # Trigger balloon animation
-            st.markdown(f'<h2 style="color:green; animation: fadeIn 2s ease-in;">💸 ${prediction:.2f}</h2>', unsafe_allow_html=True)
-        else:
-            st.error(f"Error: {response.status_code}")
+        #     st.balloons()  # Trigger balloon animation
+        #     st.markdown(f'<h2 style="color:green; animation: fadeIn 2s ease-in;">💸 ${prediction:.2f}</h2>', unsafe_allow_html=True)
+        # else:
+        #     st.error(f"Error: {response.status_code}")
 
 
 

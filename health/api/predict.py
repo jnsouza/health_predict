@@ -1,5 +1,6 @@
 import os
 import pickle
+import shap
 import pandas as pd
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -35,12 +36,8 @@ async def make_prediction(input_data: dict):
     predict = model.predict(X_pred)
     proba = model.predict_proba(X_pred)
 
-    model_in_pipeline = model.named_steps['classifier']
-    importances = model_in_pipeline.feature_importances_
-    print(importances, "IMPORTANCIAS!!!!!!!!")
-    # feature_names = data.feature_names
-# Ordenar as features pela importância
-    # sorted_idx = np.argsort(importances)
-
     # Retorne os resultados
-    return {"result": int(predict[0]), "probability": proba.tolist()}
+    return {
+            "result": int(predict[0]),
+            "probability": proba.tolist(),
+        }

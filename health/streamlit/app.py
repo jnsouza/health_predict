@@ -148,7 +148,7 @@ with st.sidebar:
 tab1, tab2 = st.tabs(["Home", "Results"])
 
 with tab1:
-    st.image("https://github.com/jnsouza/health_predict/blob/master/health/streamlit/img.png", use_column_width=True)
+    st.image("img.png", use_column_width=True)
     st.markdown("""
         <h2 style='text-align: center; color: #4a7c59;'>
         Welcome to your well-being assessment! <br>Let’s get started. 🩺 </br>

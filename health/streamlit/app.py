@@ -148,7 +148,7 @@ with st.sidebar:
 
 ## tabs
 tab1, tab2 = st.tabs(["Home", "Results"])
-img = Image.open("health_predict/health/streamlit/img.png")
+img = Image.open("health/streamlit/img.png")
 with tab1:
     st.image(img, use_column_width=True)
     st.markdown("""

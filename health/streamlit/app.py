@@ -296,7 +296,7 @@ with tab2:
                 st.write("""
                 - Schedule a checkup with your healthcare provider.
                 - Try to incorporate more movement into your daily routine.
-                - Address any mental health concerns with a professional.
+                - Address any mental health concerns with a professional..
                 """)
 
         # Lógica para mostrar um alerta baseado no score

@@ -8,28 +8,18 @@ import shap
 
 input_data = {}
 
-# URL da API do backend
-# taxiFareApiUrl = 'https://taxifare.lewagon.ai/predict'
 api_url = "http://localhost:8000/predict"
+
+
 # Configuração da página e título
 st.set_page_config(
     page_title="Well-Being Calculator",
     page_icon="🏃‍♀️❤️"
 )
 
-st.markdown("""
-    <h1 style='text-align: center; color: black;'>
-    Well-being Calculator 🩺
-    </h1>
-""", unsafe_allow_html=True)
-
-# Informação sobre a aplicação
-st.info("This application is designed to assess your well-being using machine learning algorithms. If you have concerns about your health, please consult a healthcare professional.")
-well_being_score = None
-# Sidebar para input dos dados
 with st.sidebar:
-    st.header("Patient data")
 
+    st.header("Patient data")
     # Idade e mapeamento
     age = st.slider("Age", 0, 100, 30)
     def map_age_to_category(age):
@@ -152,104 +142,140 @@ with st.sidebar:
     exract12 = exract22_value
     diffalon = 2
 
-    if st.button("🧮 Calculate Well-Being"):
-        input_data = {
-        "_AGEG5YR": age_category_value,  # Mapeando a idade para a categoria correta
-        "WTKG3": weight,  # Peso
-        "HTM4": height,  # Altura
-        "SEXVAR": sex_var,  # Sexo
-        "_BMI5CAT": bmi_value,  # Valor de BMI (Índice de Massa Corporal)
-        "_PACAT3": _pacat3_value,  # Nível de atividade física
-        "PHYSHLTH": physhlth,  # Saúde física (dias sem se sentir bem)
-        "MENTHLTH": menthlth,  # Saúde mental (dias sem se sentir bem)
-        "ADDEPEV3": depressive_disorder,  # Depressão
-        "_RFHYPE6": rfhype6,  # Pressão alta
-        "_RFCHOL3": rf_chol3,  # Colesterol alto
-        "_MICHD": d_michd,  # Doença cardíaca
-        "EXRACT22": exract22_value,  # Tipo de atividade física
-        "STRFREQ_": strfreq_value,  # Frequência de atividade de força
-        "PA3MIN_": pa3min,  # Minutos totais de atividade física por semana
-        "_LTASTH1": ltahth1,  # Asma
-        "CHECKUP1": checkup1,  # Exames médicos
-        "EXERANY2": exanery2,  # Alguma atividade física
-        "CVDINFR4": cvdinft4,  # Infarto
-        "CVDCRHD4": cvdcrhd4,  # Doença cardíaca crônica
-        "DECIDE": decide,  # Dificuldade em tomar decisões
-        "_PHYS14D": phys14d,  # Dias de má saúde física
-        "_MENT14D": ment14d,  # Dias de má saúde mental
-        "ACTIN13_": actin13,  # Atividade moderada
-        "_PAINDX3": paindx3,  # Índice de atividade física
-        "MAXVO21_": maxvo21,  # Máximo VO2
-        "EXERHMM1": exerhmm1,  # Minutos de exercício
-        "EXRACT12": exract12,  # Segunda atividade física
-        "DIFFALON": diffalon,  # Dificuldade para fazer atividades sozinho
-        "_EDUCAG": educag_value,  # Nível de educação
-        "_INCOMG1": incomg1_value, # Nível de renda
-        "_DRDXAR2": drdxar2,
-        'CVDSTRK3': cvdstrk3,  # AVC
-        'CHCOCNC1': chcocnc1,  # Câncer
-        'CHCCOPD3': chccopd3,  # Doença pulmonar
-        'CHCKDNY2': chckdny2,  # Doença renal
-        'DIABETE4': diabete4_value  # Diabetes
-    }
+    calculate_button = st.button("🧮 Calculate Well-Being")
 
-        try:
-            response = requests.post(api_url, json=input_data)  # Aqui você usa json=input_data
+#abas para navegação
+menu = ["Home", "Well-Being Score"]
+choice = st.radio("Menu", menu)
 
-            if response.status_code == 200:
-                prediction = response.json()
-
-                well_being_score = prediction['result']
-                st.success(f"Prediction: {prediction['result']}")
-                # st.write(f"Prediction Probability: {prediction['probability']}")
-            else:
-                st.error(f"Error: {response.status_code} - {response.text}")
-        except Exception as e:
-            st.error(f"Failed to connect to the API. Error: {str(e)}")
-
-    st.markdown("<br><br>", unsafe_allow_html=True)
-
-# Se a predição ainda não foi feita, mostre uma mensagem genérica
-if well_being_score is None:
-    st.subheader("Score and Analysis")
-    st.write("Your Well-Being Score will be displayed here after you calculate.")
-else:
-
-    if well_being_score <= 0.9:
-        score_label = "Excellent/Very Good"
-    elif 1 <= well_being_score <= 1.9:
-        score_label = "Good"
-    else:
-        score_label = "Fair/Poor"
-    # Exibir o gráfico com o score após a predição
-    fig = go.Figure(go.Indicator(
-    mode="gauge+number",
-    value=well_being_score,  # Esse é o valor que será atualizado dinamicamente
-    title={'text': "Well-Being Score"},
-    gauge={
-        'axis': {'range': [0, 3], 'visible': True},  # Alterando o range para 0-3
-        'bar': {'color': "rgba(128, 128, 128, 0.6)"}, # Cor com opacidade
-        'bgcolor': "white",  # Remova o fundo colorido
-        'borderwidth': 0,  # Sem borda
-        'steps': [
-            {'range': [0, 0.99], 'color': "lightgreen"},  # Excelente/Muito Bom
-            {'range': [1, 1.99], 'color': "orange"},  # Bom
-            {'range': [2, 3], 'color': "red"}  # Razoável/Péssimo
-        ],
-        'threshold': {
-            'line': {'color': "black", 'width': 4},  # Linha preta indicando o valor
-            'thickness': 0.75,
-            'value': well_being_score
+if choice == "Home":
+    st.image("img.png", use_column_width=True)
+    st.markdown("""
+        <h2 style='text-align: center; color: #4a7c59;'>
+        Welcome to your well-being assessment! <br>Let’s get started. 🩺 </br>
+        </h2>
+    """, unsafe_allow_html=True)
+    st.markdown("""
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap');
+        .stAlert {
+            background-color: #E8F5E9;  /* Fundo suave */
+            border-left: 4px solid #4CAF50;  /* Borda mais grossa e suave */
+            padding: 10px;  /* Aumenta o espaçamento interno */
+            border-radius: 5px;  /* Deixa as bordas mais arredondadas */
+            font-size: 16px;  /* Ajusta o tamanho da fonte */
+            font-family: 'Roboto', sans-serif;  /* Fonte personalizada */
         }
-    },
-    # Alterar a exibição do número para a label
-    number={'valueformat': ' - ', 'font': {'size': 30}, 'suffix': f' - {score_label}'}
-))
-    st.plotly_chart(fig)
+        </style>
+        """, unsafe_allow_html=True)
+    st.info("This application is designed to assess your well-being using machine learning algorithms. If you have concerns about your health, please consult a healthcare professional.")
+
+    # well_being_score = None
+
+elif choice == "Well-Being Score":
+
+    st.title("Your Well-Being Score")
+    if calculate_button:
+            input_data = {
+            "_AGEG5YR": age_category_value,  # Mapeando a idade para a categoria correta
+            "WTKG3": weight,  # Peso
+            "HTM4": height,  # Altura
+            "SEXVAR": sex_var,  # Sexo
+            "_BMI5CAT": bmi_value,  # Valor de BMI (Índice de Massa Corporal)
+            "_PACAT3": _pacat3_value,  # Nível de atividade física
+            "PHYSHLTH": physhlth,  # Saúde física (dias sem se sentir bem)
+            "MENTHLTH": menthlth,  # Saúde mental (dias sem se sentir bem)
+            "ADDEPEV3": depressive_disorder,  # Depressão
+            "_RFHYPE6": rfhype6,  # Pressão alta
+            "_RFCHOL3": rf_chol3,  # Colesterol alto
+            "_MICHD": d_michd,  # Doença cardíaca
+            "EXRACT22": exract22_value,  # Tipo de atividade física
+            "STRFREQ_": strfreq_value,  # Frequência de atividade de força
+            "PA3MIN_": pa3min,  # Minutos totais de atividade física por semana
+            "_LTASTH1": ltahth1,  # Asma
+            "CHECKUP1": checkup1,  # Exames médicos
+            "EXERANY2": exanery2,  # Alguma atividade física
+            "CVDINFR4": cvdinft4,  # Infarto
+            "CVDCRHD4": cvdcrhd4,  # Doença cardíaca crônica
+            "DECIDE": decide,  # Dificuldade em tomar decisões
+            "_PHYS14D": phys14d,  # Dias de má saúde física
+            "_MENT14D": ment14d,  # Dias de má saúde mental
+            "ACTIN13_": actin13,  # Atividade moderada
+            "_PAINDX3": paindx3,  # Índice de atividade física
+            "MAXVO21_": maxvo21,  # Máximo VO2
+            "EXERHMM1": exerhmm1,  # Minutos de exercício
+            "EXRACT12": exract12,  # Segunda atividade física
+            "DIFFALON": diffalon,  # Dificuldade para fazer atividades sozinho
+            "_EDUCAG": educag_value,  # Nível de educação
+            "_INCOMG1": incomg1_value, # Nível de renda
+            "_DRDXAR2": drdxar2,
+            'CVDSTRK3': cvdstrk3,  # AVC
+            'CHCOCNC1': chcocnc1,  # Câncer
+            'CHCCOPD3': chccopd3,  # Doença pulmonar
+            'CHCKDNY2': chckdny2,  # Doença renal
+            'DIABETE4': diabete4_value  # Diabetes
+        }
+            # Conexão com a API para obter a predição
+            try:
+                response = requests.post(api_url, json=input_data)
+
+                if response.status_code == 200:
+                    prediction = response.json()
+
+                    well_being_score = prediction['result']
+                    st.success(f"Prediction: {prediction['result']}")
+                    # st.write(f"Prediction Probability: {prediction['probability']}")
+                else:
+                    st.error(f"Error: {response.status_code} - {response.text}")
+            except Exception as e:
+                st.error(f"Failed to connect to the API. Error: {str(e)}")
+
+            st.markdown("<br><br>", unsafe_allow_html=True)
+
+
+    # Verifica se o score foi calculado
+    well_being_score = st.session_state.get('well_being_score', None)
+    # Se a predição ainda não foi feita, mostre uma mensagem genérica
+    if well_being_score is None:
+        st.subheader("Score and Analysis")
+        st.write("Your Well-Being Score will be displayed here after you calculate.")
+    else:
+
+        if well_being_score <= 0.9:
+            score_label = "Excellent/Very Good"
+        elif 1 <= well_being_score <= 1.9:
+            score_label = "Good"
+        else:
+            score_label = "Fair/Poor"
+        # Exibir o gráfico com o score após a predição
+        fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=well_being_score,  # Esse é o valor que será atualizado dinamicamente
+        title={'text': "Well-Being Score"},
+        gauge={
+            'axis': {'range': [0, 3], 'visible': True},  # Alterando o range para 0-3
+            'bar': {'color': "rgba(128, 128, 128, 0.6)"}, # Cor com opacidade
+            'bgcolor': "white",  # Remova o fundo colorido
+            'borderwidth': 0,  # Sem borda
+            'steps': [
+                {'range': [0, 0.99], 'color': "lightgreen"},  # Excelente/Muito Bom
+                {'range': [1, 1.99], 'color': "orange"},  # Bom
+                {'range': [2, 3], 'color': "red"}  # Razoável/Péssimo
+            ],
+            'threshold': {
+                'line': {'color': "black", 'width': 4},  # Linha preta indicando o valor
+                'thickness': 0.75,
+                'value': well_being_score
+            }
+        },
+        # Alterar a exibição do número para a label
+        number={'valueformat': ' - ', 'font': {'size': 30}, 'suffix': f' - {score_label}'}
+    ))
+        st.plotly_chart(fig)
 
     st.markdown("""
-        ### Well-Being Score Ranges:
-        - **0 - 0.9**: Excellent/Very Good
-        - **1 - 1.9**: Good
-        - **2 - 2.9**: Fair/Poor
-        """)
+            ### Well-Being Score Ranges:
+            - **0 - 0.9**: Excellent/Very Good
+            - **1 - 1.9**: Good
+            - **2 - 2.9**: Fair/Poor
+            """)

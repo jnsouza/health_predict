@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#81C784"  # Verde suave para elementos interativos
+backgroundColor = "#F7F9F9"  # Cor de fundo principal clara
+secondaryBackgroundColor = "#E8F5E9"  # Cor de fundo suave para a barra lateral
+textColor = "#37474F"  # Cinza escuro para o texto
+font = "sans serif"  # Fonte principal

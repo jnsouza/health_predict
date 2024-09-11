@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import requests
+import matplotlib.pyplot as plt
+import shap
 
 input_data = {}
 
@@ -197,8 +199,8 @@ with st.sidebar:
             if response.status_code == 200:
                 prediction = response.json()
 
-                st.success(f"Prediction: {prediction['result']}")
                 well_being_score = prediction['result']
+                st.success(f"Prediction: {prediction['result']}")
                 # st.write(f"Prediction Probability: {prediction['probability']}")
             else:
                 st.error(f"Error: {response.status_code} - {response.text}")
@@ -212,6 +214,13 @@ if well_being_score is None:
     st.subheader("Score and Analysis")
     st.write("Your Well-Being Score will be displayed here after you calculate.")
 else:
+
+    if well_being_score <= 0.9:
+        score_label = "Excellent/Very Good"
+    elif 1 <= well_being_score <= 1.9:
+        score_label = "Good"
+    else:
+        score_label = "Fair/Poor"
     # Exibir o gráfico com o score após a predição
     fig = go.Figure(go.Indicator(
     mode="gauge+number",
@@ -219,12 +228,11 @@ else:
     title={'text': "Well-Being Score"},
     gauge={
         'axis': {'range': [0, 3], 'visible': True},  # Alterando o range para 0-3
-        'bar': {'color': "green"},  # Cor da barra que mostra o valor atual
-        'bgcolor': "white",  # Remova o fundo colorido
+        'bar': {'color': "rgba(128, 128, 128, 0.6)"}, # Cor com opacidade        'bgcolor': "white",  # Remova o fundo colorido
         'borderwidth': 0,  # Sem borda
         'steps': [
-            {'range': [0, 1], 'color': "lightgreen"},  # Excelente/Muito Bom
-            {'range': [1, 2], 'color': "orange"},  # Bom
+            {'range': [0, 0.99], 'color': "lightgreen"},  # Excelente/Muito Bom
+            {'range': [1, 1.99], 'color': "orange"},  # Bom
             {'range': [2, 3], 'color': "red"}  # Razoável/Péssimo
         ],
         'threshold': {
@@ -232,12 +240,15 @@ else:
             'thickness': 0.75,
             'value': well_being_score
         }
-    }
+    },
+    # Alterar a exibição do número para a label
+    number={'valueformat': ' - ', 'font': {'size': 30}, 'suffix': f' - {score_label}'}
 ))
     st.plotly_chart(fig)
+
     st.markdown("""
         ### Well-Being Score Ranges:
-        - **0 - 1**: Excellent/Very Good
-        - **1 - 2**: Good
-        - **2 - 3**: Fair/Poor
+        - **0 - 0.9**: Excellent/Very Good
+        - **1 - 1.9**: Good
+        - **2 - 2.9**: Fair/Poor
         """)

@@ -143,8 +143,9 @@ with st.sidebar:
 
     calculate_button = st.button("🧮 Calculate Well-Being")
 
+
 ## tabs
-tab1, tab2 = st.tabs(["Home", "Well-Being Score"])
+tab1, tab2 = st.tabs(["Home", "Results"])
 
 with tab1:
     st.image("img.png", use_column_width=True)
@@ -272,3 +273,36 @@ with tab2:
             - **1 - 1.9**: Good
             - **2 - 2.9**: Fair/Poor
             """)
+    if well_being_score:    # Lógica condicional com botões interativos ou expander para dicas adicionais
+        if well_being_score <= 0.9:
+            st.subheader("Excellent/Very Good")
+            with st.expander("Click here for tips on maintaining an excellent score"):
+                st.write("""
+                - Keep up the good work!
+                - Maintain a balanced diet.
+                - Continue your physical activity routine.
+                """)
+        elif 1 <= well_being_score <= 1.9:
+            st.subheader("Good")
+            with st.expander("Click here for tips on improving your well-being score"):
+                st.write("""
+                - Consider adding more fruits and vegetables to your diet.
+                - Increase your physical activity gradually.
+                - Make sure to get enough sleep.
+                """)
+        elif well_being_score >= 2:
+            st.subheader("Fair/Poor")
+            with st.expander("Click here for recommendations to improve your well-being"):
+                st.write("""
+                - Schedule a checkup with your healthcare provider.
+                - Try to incorporate more movement into your daily routine.
+                - Address any mental health concerns with a professional.
+                """)
+
+        # Lógica para mostrar um alerta baseado no score
+        if well_being_score >= 2:
+            st.error("Your well-being score is lower than ideal. Consider taking steps to improve your health.")
+        elif 1 <= well_being_score < 2:
+            st.warning("Your well-being score is good, but there are areas for improvement.")
+        else:
+            st.success("You are doing great! Keep maintaining your healthy habits.")

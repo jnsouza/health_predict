@@ -6,10 +6,9 @@ import requests
 import matplotlib.pyplot as plt
 import shap
 
+
 input_data = {}
-
 api_url = "http://localhost:8000/predict"
-
 
 # Configuração da página e título
 st.set_page_config(
@@ -23,7 +22,7 @@ with st.sidebar:
     # Idade e mapeamento
     age = st.slider("Age", 0, 100, 30)
     def map_age_to_category(age):
-        if 18 <= age <= 24: return 1
+        if 18   <= age <= 24: return 1
         elif 25 <= age <= 29: return 2
         elif 30 <= age <= 34: return 3
         elif 35 <= age <= 39: return 4
@@ -121,9 +120,9 @@ with st.sidebar:
     }[x])
 
     # Variáveis hardcoded
-    educag_value = 4.0
+    educag_value  = 4.0
     incomg1_value = 5.0
-    ltahth1 = 1.0
+    ltahth1  = 1.0
     checkup1 = 1.0
     exanery2 = 1.0
     cvdinft4 = 1.0
@@ -132,23 +131,22 @@ with st.sidebar:
     chcocnc1 = 2.0
     chccopd3 = 2.0
     chckdny2 = 2.0
-    decide = 2.0
-    phys14d = 1
-    ment14d = 1
-    actin13 = 1
-    paindx3 = 1
-    maxvo21 = 2395
+    decide   = 2.0
+    phys14d  = 1
+    ment14d  = 1
+    actin13  = 1
+    paindx3  = 1
+    maxvo21  = 2395
     exerhmm1 = 129.52
     exract12 = exract22_value
     diffalon = 2
 
     calculate_button = st.button("🧮 Calculate Well-Being")
 
-#abas para navegação
-menu = ["Home", "Well-Being Score"]
-choice = st.radio("Menu", menu)
+## tabs
+tab1, tab2 = st.tabs(["Home", "Well-Being Score"])
 
-if choice == "Home":
+with tab1:
     st.image("img.png", use_column_width=True)
     st.markdown("""
         <h2 style='text-align: center; color: #4a7c59;'>
@@ -169,108 +167,103 @@ if choice == "Home":
         </style>
         """, unsafe_allow_html=True)
     st.info("This application is designed to assess your well-being using machine learning algorithms. If you have concerns about your health, please consult a healthcare professional.")
-
+    well_being_score = st.session_state.get('well_being_score', None)
     # well_being_score = None
 
-elif choice == "Well-Being Score":
+with tab2:
 
     st.title("Your Well-Being Score")
     if calculate_button:
-            input_data = {
-            "_AGEG5YR": age_category_value,  # Mapeando a idade para a categoria correta
-            "WTKG3": weight,  # Peso
-            "HTM4": height,  # Altura
-            "SEXVAR": sex_var,  # Sexo
-            "_BMI5CAT": bmi_value,  # Valor de BMI (Índice de Massa Corporal)
-            "_PACAT3": _pacat3_value,  # Nível de atividade física
-            "PHYSHLTH": physhlth,  # Saúde física (dias sem se sentir bem)
-            "MENTHLTH": menthlth,  # Saúde mental (dias sem se sentir bem)
-            "ADDEPEV3": depressive_disorder,  # Depressão
-            "_RFHYPE6": rfhype6,  # Pressão alta
-            "_RFCHOL3": rf_chol3,  # Colesterol alto
-            "_MICHD": d_michd,  # Doença cardíaca
-            "EXRACT22": exract22_value,  # Tipo de atividade física
-            "STRFREQ_": strfreq_value,  # Frequência de atividade de força
-            "PA3MIN_": pa3min,  # Minutos totais de atividade física por semana
-            "_LTASTH1": ltahth1,  # Asma
-            "CHECKUP1": checkup1,  # Exames médicos
-            "EXERANY2": exanery2,  # Alguma atividade física
-            "CVDINFR4": cvdinft4,  # Infarto
-            "CVDCRHD4": cvdcrhd4,  # Doença cardíaca crônica
-            "DECIDE": decide,  # Dificuldade em tomar decisões
-            "_PHYS14D": phys14d,  # Dias de má saúde física
-            "_MENT14D": ment14d,  # Dias de má saúde mental
-            "ACTIN13_": actin13,  # Atividade moderada
-            "_PAINDX3": paindx3,  # Índice de atividade física
-            "MAXVO21_": maxvo21,  # Máximo VO2
-            "EXERHMM1": exerhmm1,  # Minutos de exercício
-            "EXRACT12": exract12,  # Segunda atividade física
-            "DIFFALON": diffalon,  # Dificuldade para fazer atividades sozinho
-            "_EDUCAG": educag_value,  # Nível de educação
-            "_INCOMG1": incomg1_value, # Nível de renda
-            "_DRDXAR2": drdxar2,
-            'CVDSTRK3': cvdstrk3,  # AVC
-            'CHCOCNC1': chcocnc1,  # Câncer
-            'CHCCOPD3': chccopd3,  # Doença pulmonar
-            'CHCKDNY2': chckdny2,  # Doença renal
-            'DIABETE4': diabete4_value  # Diabetes
-        }
-            # Conexão com a API para obter a predição
-            try:
-                response = requests.post(api_url, json=input_data)
+        input_data = {
+        "_AGEG5YR": age_category_value,  # Mapeando a idade para a categoria correta
+        "WTKG3": weight,  # Peso
+        "HTM4": height,  # Altura
+        "SEXVAR": sex_var,  # Sexo
+        "_BMI5CAT": bmi_value,  # Valor de BMI (Índice de Massa Corporal)
+        "_PACAT3": _pacat3_value,  # Nível de atividade física
+        "PHYSHLTH": physhlth,  # Saúde física (dias sem se sentir bem)
+        "MENTHLTH": menthlth,  # Saúde mental (dias sem se sentir bem)
+        "ADDEPEV3": depressive_disorder,  # Depressão
+        "_RFHYPE6": rfhype6,  # Pressão alta
+        "_RFCHOL3": rf_chol3,  # Colesterol alto
+        "_MICHD": d_michd,  # Doença cardíaca
+        "EXRACT22": exract22_value,  # Tipo de atividade física
+        "STRFREQ_": strfreq_value,  # Frequência de atividade de força
+        "PA3MIN_": pa3min,  # Minutos totais de atividade física por semana
+        "_LTASTH1": ltahth1,  # Asma
+        "CHECKUP1": checkup1,  # Exames médicos
+        "EXERANY2": exanery2,  # Alguma atividade física
+        "CVDINFR4": cvdinft4,  # Infarto
+        "CVDCRHD4": cvdcrhd4,  # Doença cardíaca crônica
+        "DECIDE": decide,  # Dificuldade em tomar decisões
+        "_PHYS14D": phys14d,  # Dias de má saúde física
+        "_MENT14D": ment14d,  # Dias de má saúde mental
+        "ACTIN13_": actin13,  # Atividade moderada
+        "_PAINDX3": paindx3,  # Índice de atividade física
+        "MAXVO21_": maxvo21,  # Máximo VO2
+        "EXERHMM1": exerhmm1,  # Minutos de exercício
+        "EXRACT12": exract12,  # Segunda atividade física
+        "DIFFALON": diffalon,  # Dificuldade para fazer atividades sozinho
+        "_EDUCAG": educag_value,  # Nível de educação
+        "_INCOMG1": incomg1_value, # Nível de renda
+        "_DRDXAR2": drdxar2,
+        'CVDSTRK3': cvdstrk3,  # AVC
+        'CHCOCNC1': chcocnc1,  # Câncer
+        'CHCCOPD3': chccopd3,  # Doença pulmonar
+        'CHCKDNY2': chckdny2,  # Doença renal
+        'DIABETE4': diabete4_value  # Diabetes
+    }
+        # Conexão com a API para obter a predição
+        try:
+            response = requests.post(api_url, json=input_data)
 
-                if response.status_code == 200:
-                    prediction = response.json()
+            if response.status_code == 200:
+                prediction = response.json()
 
-                    well_being_score = prediction['result']
-                    st.success(f"Prediction: {prediction['result']}")
-                    # st.write(f"Prediction Probability: {prediction['probability']}")
-                else:
-                    st.error(f"Error: {response.status_code} - {response.text}")
-            except Exception as e:
-                st.error(f"Failed to connect to the API. Error: {str(e)}")
+                well_being_score = prediction['result']
+                # st.success(f"Prediction: {prediction['result']}")
+                # st.write(f"Prediction Probability: {prediction['probability']}")
+            else:
+                st.error(f"Error: {response.status_code} - {response.text}")
+        except Exception as e:
+            st.error(f"Failed to connect to the API. Error: {str(e)}")
 
-            st.markdown("<br><br>", unsafe_allow_html=True)
+        st.markdown("<br><br>", unsafe_allow_html=True)
 
 
-    # Verifica se o score foi calculado
-    well_being_score = st.session_state.get('well_being_score', None)
     # Se a predição ainda não foi feita, mostre uma mensagem genérica
     if well_being_score is None:
         st.subheader("Score and Analysis")
         st.write("Your Well-Being Score will be displayed here after you calculate.")
     else:
-
         if well_being_score <= 0.9:
-            score_label = "Excellent/Very Good"
+            score_label = "Excellent/Very Good 🎉🎉"
         elif 1 <= well_being_score <= 1.9:
-            score_label = "Good"
+            score_label = "Good 👏🏾👏🏾"
         else:
-            score_label = "Fair/Poor"
+            score_label = "Fair/Poor 🫣🫣 "
+
         # Exibir o gráfico com o score após a predição
-        fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=well_being_score,  # Esse é o valor que será atualizado dinamicamente
-        title={'text': "Well-Being Score"},
-        gauge={
-            'axis': {'range': [0, 3], 'visible': True},  # Alterando o range para 0-3
-            'bar': {'color': "rgba(128, 128, 128, 0.6)"}, # Cor com opacidade
-            'bgcolor': "white",  # Remova o fundo colorido
-            'borderwidth': 0,  # Sem borda
-            'steps': [
-                {'range': [0, 0.99], 'color': "lightgreen"},  # Excelente/Muito Bom
-                {'range': [1, 1.99], 'color': "orange"},  # Bom
-                {'range': [2, 3], 'color': "red"}  # Razoável/Péssimo
-            ],
-            'threshold': {
-                'line': {'color': "black", 'width': 4},  # Linha preta indicando o valor
-                'thickness': 0.75,
-                'value': well_being_score
-            }
-        },
-        # Alterar a exibição do número para a label
-        number={'valueformat': ' - ', 'font': {'size': 30}, 'suffix': f' - {score_label}'}
-    ))
+        fig = go.Figure(go.Indicator(mode="gauge+number",
+                                        value=well_being_score,  # Esse é o valor que será atualizado dinamicamente
+                                        title={'text': "Well-Being Score"},
+                                        gauge={'axis': {'range': [0, 3], 'visible': True},  # Alterando o range para 0-3
+                                            'bar': {'color': "rgba(128, 128, 128, 0.6)"}, # Cor com opacidade
+                                            'bgcolor': "white",  # Remova o fundo colorido
+                                            'borderwidth': 0,  # Sem borda
+                                            'steps': [{'range': [0, 0.99], 'color': "lightgreen"}, # Excelente/Muito Bom
+                                                        {'range': [1, 1.99], 'color': "orange"},     # Bom
+                                                        {'range': [2, 3],    'color': "red"}         # Razoável/Péssimo
+                                                        ],
+                                            'threshold': {'line': {'color': "black", 'width': 4},  # Linha preta indicando o valor
+                                                                    'thickness': 0.75,
+                                                                    'value': well_being_score
+                                                            }
+                                            },
+                                    # Alterar a exibição do número para a label
+                                    number={'valueformat': ' - ', 'font': {'size': 30}, 'suffix': f' - {score_label}'}
+                                    )
+                        )
         st.plotly_chart(fig)
 
     st.markdown("""

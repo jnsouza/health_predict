@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 import requests
 import matplotlib.pyplot as plt
 import shap
+from PIL import Image
 
 
 input_data = {}
@@ -146,9 +147,9 @@ with st.sidebar:
 
 ## tabs
 tab1, tab2 = st.tabs(["Home", "Results"])
-
+img = Image.open("img.png")
 with tab1:
-    st.image("img.png", use_column_width=True)
+    st.image(img, use_column_width=True)
     st.markdown("""
         <h2 style='text-align: center; color: #4a7c59;'>
         Welcome to your well-being assessment! <br>Let’s get started. 🩺 </br>

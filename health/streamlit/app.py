@@ -11,6 +11,7 @@ from PIL import Image
 input_data = {}
 api_url = "http://localhost:8000/predict"
 
+
 # Configuração da página e título
 st.set_page_config(
     page_title="Well-Being Calculator",
@@ -147,7 +148,7 @@ with st.sidebar:
 
 ## tabs
 tab1, tab2 = st.tabs(["Home", "Results"])
-img = Image.open("img.png")
+img = Image.open("health_predict/health/streamlit/img.png")
 with tab1:
     st.image(img, use_column_width=True)
     st.markdown("""

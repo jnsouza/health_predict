@@ -228,7 +228,8 @@ else:
     title={'text': "Well-Being Score"},
     gauge={
         'axis': {'range': [0, 3], 'visible': True},  # Alterando o range para 0-3
-        'bar': {'color': "rgba(128, 128, 128, 0.6)"}, # Cor com opacidade        'bgcolor': "white",  # Remova o fundo colorido
+        'bar': {'color': "rgba(128, 128, 128, 0.6)"}, # Cor com opacidade
+        'bgcolor': "white",  # Remova o fundo colorido
         'borderwidth': 0,  # Sem borda
         'steps': [
             {'range': [0, 0.99], 'color': "lightgreen"},  # Excelente/Muito Bom
